@@ -10,7 +10,7 @@ from .auth import get_current_user
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
-@router.post("/", response_model=product_schema.ProductOut)
+@router.post("/insert", response_model=product_schema.ProductOut)
 def create_product(
     product_in: product_schema.ProductCreate, 
     db: Session = Depends(session.get_db),
@@ -25,7 +25,7 @@ def create_product(
     db.refresh(new_product)
     return new_product
 
-@router.get("/", response_model=List[product_schema.ProductOut])
+@router.get("/browse", response_model=List[product_schema.ProductOut])
 def get_my_products(
     db: Session = Depends(session.get_db),
     current_user: models.User = Depends(get_current_user)
