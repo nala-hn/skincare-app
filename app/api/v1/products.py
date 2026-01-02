@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 from ...database import models, session
 from ...schemas import product as product_schema
 from .auth import get_current_user
+from ...schemas import routine as routine_schema
+from ...core.skincare_logic import check_compatibility
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -52,3 +54,42 @@ def get_active_ingredients(db: Session = Depends(session.get_db)):
     """
     ingredients = db.query(models.ActiveIngredient).all()
     return ingredients
+
+@router.post("/check-conflict")
+def check_product_conflict(
+    req: routine_schema.ConflictCheckRequest,
+    db: Session = Depends(session.get_db)
+):
+    # 1. Ambil data kedua produk beserta ingredients-nya
+    prod_a = db.query(models.Product).filter(models.Product.id == req.product_id_a).first()
+    prod_b = db.query(models.Product).filter(models.Product.id == req.product_id_b).first()
+
+    if not prod_a or not prod_b:
+        raise HTTPException(status_code=404, detail="Produk tidak ditemukan")
+
+    # 2. Ambil list nama bahan aktif dari masing-masing produk
+    ing_a = [i.name for i in prod_a.ingredients]
+    ing_b = [i.name for i in prod_b.ingredients]
+
+    # 3. Logika Tabrakan (Bisa dikembangkan lebih lanjut)
+    conflicts_found = []
+    
+    # Contoh logic: Retinol vs AHA/BHA/Vit C
+    for a in ing_a:
+        for b in ing_b:
+            is_safe, message = check_compatibility(a, b) # Pakai fungsi utils kita tadi
+            if not is_safe:
+                conflicts_found.append(message)
+
+    if conflicts_found:
+        return {
+            "can_combine": False,
+            "conflicts": conflicts_found,
+            "advice": "Gunakan di waktu berbeda (misal: satu pagi, satu malam)."
+        }
+
+    return {
+        "can_combine": True,
+        "conflicts": [],
+        "advice": "Aman digunakan bersamaan!"
+    }
