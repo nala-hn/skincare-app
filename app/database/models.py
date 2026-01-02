@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Time, Boolean, Float, JSON, Table, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Time, Boolean, Float, JSON, Table, Enum, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
@@ -56,7 +56,7 @@ class ActiveIngredient(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-
+    description = Column(Text, nullable=True)
 
 class IngredientConflict(Base):
     __tablename__ = "ingredient_conflicts"
