@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2
+python-dotenv
+cloudinary
+pydantic-settings
+tensorflow
+pillow
+numpy
+requests
+passlib[bcrypt]
+python-multipart
+python-jose[cryptography]
+python-dateutil
+PyJWT
