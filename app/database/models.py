@@ -79,6 +79,7 @@ class Product(Base):
     opened_at = Column(Date, nullable=True)
     pao_months = Column(Integer, default=12)
     is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     owner = relationship("User", back_populates="products")
     category = relationship("Category", back_populates="products")

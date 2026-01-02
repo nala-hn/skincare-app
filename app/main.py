@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.database import models
 from app.database.session import engine
 from .api.v1 import auth
+from .api.v1 import products
 
 app = FastAPI(
     title="Skincare Tracker API",
@@ -19,3 +20,4 @@ def home():
     }
 
 app.include_router(auth.router)
+app.include_router(products.router)
