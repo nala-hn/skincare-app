@@ -91,7 +91,7 @@ class Routine(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    routine_type = Column(Enum(RoutineType), nullable=False)
+    routine_type = Column(String, nullable=False) 
     scheduled_time = Column(Time, nullable=False)
 
     owner = relationship("User", back_populates="routines")
