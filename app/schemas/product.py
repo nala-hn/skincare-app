@@ -1,5 +1,5 @@
 from pydantic import BaseModel, computed_field
-from typing import Optional
+from typing import Optional, List
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
@@ -11,7 +11,7 @@ class ProductBase(BaseModel):
     opened_at: Optional[date] = None
 
 class ProductCreate(ProductBase):
-    pass
+    ingredient_ids: Optional[List[int]] = []
 
 class ProductOut(ProductBase):
     id: int

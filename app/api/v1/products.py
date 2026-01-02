@@ -16,10 +16,17 @@ def create_product(
     db: Session = Depends(session.get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    new_product = models.Product(
-        **product_in.model_dump(),
-        user_id=current_user.id
-    )
+    ing_ids = product_in.ingredient_ids
+    
+    product_data = product_in.model_dump()
+    product_data.pop("ingredient_ids", None)
+    
+    new_product = models.Product(**product_data, user_id=current_user.id)
+    
+    if ing_ids:
+        active_ings = db.query(models.ActiveIngredient).filter(models.ActiveIngredient.id.in_(ing_ids)).all()
+        new_product.ingredients = active_ings
+    
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
@@ -37,3 +44,11 @@ def get_my_products(
             p.expiry_date = p.opened_at + relativedelta(months=p.pao_months)
             
     return products
+
+@router.get("/active-ingredients/browse", response_model=List[product_schema.IngredientOut])
+def get_active_ingredients(db: Session = Depends(session.get_db)):
+    """
+    Mengambil semua daftar bahan aktif dari database untuk pilihan dropdown di Frontend.
+    """
+    ingredients = db.query(models.ActiveIngredient).all()
+    return ingredients
