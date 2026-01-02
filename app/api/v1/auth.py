@@ -45,7 +45,20 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token = security.create_access_token(data={"sub": user.email})
+    from ...core.utils import calculate_age
+    user_age = calculate_age(user.date_of_birth)
+
+    token_data = {
+        "sub": user.email,
+        "full_name": user.full_name,
+        "alias": user.alias,
+        "gender": user.gender,
+        "date_of_birth": str(user.date_of_birth) if user.date_of_birth else None,
+        "age": user_age,
+        "skin_type": user.skin_type
+    }
+    
+    access_token = security.create_access_token(data=token_data)
     return {"access_token": access_token, "token_type": "bearer"}
 
 def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
