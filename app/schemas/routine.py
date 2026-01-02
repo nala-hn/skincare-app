@@ -3,6 +3,8 @@ from typing import List, Optional
 from datetime import time
 import enum
 
+from app.schemas.product import ProductOut
+
 class RoutineType(str, enum.Enum):
     MORNING = "morning"
     NIGHT = "night"
@@ -13,6 +15,8 @@ class RoutineItemBase(BaseModel):
 
 class RoutineItemOut(RoutineItemBase):
     id: int
+    order_index: int
+    product: Optional[ProductOut]
     class Config:
         from_attributes = True
 
@@ -25,6 +29,9 @@ class RoutineOut(BaseModel):
     routine_type: RoutineType
     scheduled_time: time
     items: List[RoutineItemOut] = []
+    can_combine: bool = True
+    conflicts: List[str] = []
+    advice: Optional[str] = None
 
     class Config:
         from_attributes = True
